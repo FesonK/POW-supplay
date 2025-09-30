@@ -1,5 +1,5 @@
-POWER-SUPPLaY: Turning Power Supplies into SpeakersAn implementation of the research paper "POWER-SUPPLaY: Leaking Data from Air-Gapped Systems by Turning the Power-Supplies Into Speakers" by Mordechai Guri. This project demonstrates how to generate audio signals from a computer's Power Supply Unit (PSU) without using any audio hardware, enabling data exfiltration from air-gapped systems.🚀 Key FeaturesSpeaker-less Audio: Generate audible and ultrasonic tones directly from the PSU.
-
+POWER-SUPPLaY: Turning Power Supplies into SpeakersAn implementation of the research paper "POWER-SUPPLaY: Leaking Data from Air-Gapped Systems by Turning the Power-Supplies Into Speakers" by Mordechai Guri. This project demonstrates how to generate audio signals from a computer's Power Supply Unit (PSU) without using any audio hardware.🚀 Key FeaturesSpeaker-less Audio: Generate audible and ultrasonic tones directly from the PSU.
+(This is for research purposes)
 Data Exfiltration: Modulate and transmit binary data over the generated acoustic signals.No Special Privileges: The transmitter code runs in user-mode without requiring root access or special hardware permissions.Cross-Platform Potential: The core technique works on various systems, including PCs, servers, and even some IoT devices.
 
 How It WorksThe malware exploits a fascinating hardware side-channel. By carefully controlling the CPU workload, it's possible to manipulate the internal switching frequency of the Power Supply Unit (PSU). 
