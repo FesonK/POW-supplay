@@ -1,0 +1,117 @@
+# POWER-SUPPLaY Project Makefile
+# Educational research implementation
+
+CC = gcc
+CFLAGS = -Wall -Wextra -O2 -pthread -lm -D_GNU_SOURCE
+DEBUG_FLAGS = -g -DDEBUG
+TARGETS = transmitter wav_player ofdm_transmitter
+
+# Source files
+TRANSMITTER_SRC = src/transmitter/main.c
+WAV_PLAYER_SRC = src/transmitter/wav_player.c
+OFDM_SRC = src/transmitter/ofdm_transmitter.c
+MODULATION_SRC = src/transmitter/modulation.c
+
+# Build directory
+BUILD_DIR = build
+
+all: $(TARGETS)
+
+# Create build directory
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+# Main transmitter binary
+transmitter: $(BUILD_DIR) $(TRANSMITTER_SRC)
+	$(CC) $(TRANSMITTER_SRC) -o $(BUILD_DIR)/transmitter $(CFLAGS)
+	@echo "Built transmitter -> $(BUILD_DIR)/transmitter"
+
+# WAV player binary
+wav_player: $(BUILD_DIR) $(WAV_PLAYER_SRC)
+	$(CC) $(WAV_PLAYER_SRC) -o $(BUILD_DIR)/wav_player $(CFLAGS)
+	@echo "Built WAV player -> $(BUILD_DIR)/wav_player"
+
+# OFDM transmitter binary
+ofdm_transmitter: $(BUILD_DIR) $(OFDM_SRC) $(MODULATION_SRC)
+	$(CC) $(OFDM_SRC) $(MODULATION_SRC) -o $(BUILD_DIR)/ofdm_transmitter $(CFLAGS)
+	@echo "Built OFDM transmitter -> $(BUILD_DIR)/ofdm_transmitter"
+
+# Debug builds
+debug: CFLAGS += $(DEBUG_FLAGS)
+debug: all
+
+# Test targets
+test_tone: transmitter
+	./$(BUILD_DIR)/transmitter tone 440 2000 4
+
+test_fsk: transmitter
+	./$(BUILD_DIR)/transmitter fsk 8000 8500 50 4 "TEST"
+
+test_ultrasonic: transmitter
+	@echo "Testing ultrasonic transmission (20kHz - inaudible to most adults)"
+	./$(BUILD_DIR)/transmitter tone 20000 3000 4
+
+# Performance test
+perf_test: transmitter
+	@echo "Running performance test with different core counts..."
+	@for cores in 1 2 4 8; do \
+		echo "Testing with $$cores cores:"; \
+		./$(BUILD_DIR)/transmitter tone 8000 1000 $$cores; \
+		sleep 1; \
+	done
+
+# Security demonstration (educational)
+demo_covert: transmitter
+	@echo "====================================================="
+	@echo "COVERT CHANNEL DEMONSTRATION (EDUCATIONAL PURPOSES)"
+	@echo "====================================================="
+	@echo "Transmitting 'SECRET' using near-ultrasonic frequencies"
+	@echo "Frequency 0: 19000 Hz, Frequency 1: 20000 Hz"
+	@echo "Most adults cannot hear these frequencies"
+	@echo "====================================================="
+	./$(BUILD_DIR)/transmitter fsk 19000 20000 30 4 "SECRET"
+
+# Clean build artifacts
+clean:
+	rm -rf $(BUILD_DIR)
+	rm -f *.o core
+
+# Install (copies to /usr/local/bin - requires sudo)
+install: all
+	@echo "Installing to /usr/local/bin (requires sudo)"
+	sudo cp $(BUILD_DIR)/transmitter /usr/local/bin/powersupplay-transmitter
+	sudo cp $(BUILD_DIR)/wav_player /usr/local/bin/powersupplay-wav
+	sudo cp $(BUILD_DIR)/ofdm_transmitter /usr/local/bin/powersupplay-ofdm
+	@echo "Installation complete. Binaries available as:"
+	@echo "  - powersupplay-transmitter"
+	@echo "  - powersupplay-wav"
+	@echo "  - powersupplay-ofdm"
+
+# Uninstall
+uninstall:
+	sudo rm -f /usr/local/bin/powersupplay-transmitter
+	sudo rm -f /usr/local/bin/powersupplay-wav
+	sudo rm -f /usr/local/bin/powersupplay-ofdm
+	@echo "Uninstalled POWER-SUPPLaY tools"
+
+# Help target
+help:
+	@echo "POWER-SUPPLaY Project Build System"
+	@echo "==================================="
+	@echo "Available targets:"
+	@echo "  make all              - Build all components"
+	@echo "  make transmitter      - Build main transmitter"
+	@echo "  make wav_player       - Build WAV player"
+	@echo "  make ofdm_transmitter - Build OFDM transmitter"
+	@echo "  make debug            - Build with debug symbols"
+	@echo "  make test_tone        - Test tone generation"
+	@echo "  make test_fsk         - Test FSK transmission"
+	@echo "  make test_ultrasonic  - Test ultrasonic frequencies"
+	@echo "  make perf_test        - Performance testing"
+	@echo "  make demo_covert      - Demonstrate covert channel"
+	@echo "  make install          - Install binaries (requires sudo)"
+	@echo "  make uninstall        - Remove installed binaries"
+	@echo "  make clean            - Remove build artifacts"
+	@echo "  make help             - Show this help message"
+
+.PHONY: all clean debug install uninstall help test_tone test_fsk test_ultrasonic perf_test demo_covert
